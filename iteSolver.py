@@ -5,36 +5,50 @@ Created on Jan 10, 2021
 @author: Christoph
 '''
 
-def __ite(formula , atoms, interpretations, details):
+def __ite(formula , atoms, interpretations, details, counter):
     
-    current_index = 0
-    
-    for i in range(0, len(atoms)):
+    '''for i in range(0, len(atoms)):
         if(interpretations[i] == None):
             current_index = i
-            break
+            break'''
+                   
+    indexes = []
+    for i in range(0, len(atoms)):
+        if(atoms[i] == 'X'+str(counter)):
+            indexes.append(i)       
+        
+    counter = counter + 1
+    current_index = counter -1
     
     interpretations_true = interpretations.copy()
-    interpretations_true[current_index] = True 
-    result_formula_true = satSolver.solve_and_simplify(formula, interpretations_true)
+    
+    for i in range(0, len(interpretations)):      
+        if(i in indexes):
+            interpretations_true[i] = True
+        
+    result_formula_true = satSolver.solve_and_simplify(formula, interpretations_true, atoms)
     
     interpretations_false = interpretations.copy()
-    interpretations_false[current_index] = False
-    result_formula_false = satSolver.solve_and_simplify(formula, interpretations_false)
+    
+    for i in range(0, len(interpretations)):
+        if(i in indexes):     
+            interpretations_false[i] = False
+        
+    result_formula_false = satSolver.solve_and_simplify(formula, interpretations_false, atoms)
     
     if(len(result_formula_true[0]) == 1 and type(result_formula_true[0][0]) == bool) and (len(result_formula_false[0]) == 1 and type(result_formula_false[0][0]) == bool):
         if(details):
-            return [atoms[current_index], result_formula_true[0],  result_formula_false[0], result_formula_true[1], result_formula_false[1]]
+            return ['X'+str(current_index), result_formula_true[0],  result_formula_false[0], result_formula_true[1], result_formula_false[1]]
         else:
-            return [atoms[current_index], result_formula_true[0], result_formula_false[0]]
+            return ['X'+str(current_index), result_formula_true[0], result_formula_false[0]]
     else:          
-        true_branch = __ite(result_formula_true[0], atoms, interpretations_true, details)
-        false_branch = __ite(result_formula_false[0], atoms, interpretations_false, details)
+        true_branch = __ite(result_formula_true[0], atoms, interpretations_true, details, counter)
+        false_branch = __ite(result_formula_false[0], atoms, interpretations_false, details, counter)
     
         if(details):
-            return [atoms[current_index], true_branch, false_branch, result_formula_true[1],  result_formula_false[1]]
+            return ['X'+str(current_index), true_branch, false_branch, result_formula_true[1],  result_formula_false[1]]
         else:
-            return [atoms[current_index], true_branch, false_branch]
+            return ['X'+str(current_index), true_branch, false_branch]
 
 def post_simplify(tree):
     
@@ -81,7 +95,7 @@ def solve_ite(formula_string, details):
     for a in atoms:
         interpretations.append(None) 
     
-    pre_simplify_result = __ite(formula[0], atoms, interpretations, details)
+    pre_simplify_result = __ite(formula[0], atoms, interpretations, details, 0)
     
     post_simplify_result = post_simplify(pre_simplify_result)
     

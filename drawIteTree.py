@@ -129,7 +129,7 @@ Example formulas: (X0 & X1) ; ((X0 & X1) | X2)
 '''
 def main():
     print("--------------")
-    print("ITE Resolver: ")
+    print("ITE Solver: ")
     print('')
     print("by Christoph B.")
     print("--------------")

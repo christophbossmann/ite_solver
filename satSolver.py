@@ -222,24 +222,28 @@ def __evaluate_atom(formular, n):
         i += 1
     return i, ''.join(('X', result))
 
-def set_interpretations_formular_list(formular, interpretations):
+def set_interpretations_formular_list(formular, interpretations, atoms):
     i = 0
     result = []
     for s in formular:
         atom_num = __is_atom(s)
-        if(not(atom_num == -1)):
-            if(interpretations[atom_num] == True or interpretations[atom_num] == False):
-                result.append(interpretations[atom_num])
-            else:
-                result.append(s)
-            i += 1
+        if(not(atom_num == -1) and (s in atoms)):
+                index = atoms.index(s)
+                
+                if(not(interpretations[index] == None)):                   
+                    result.append(interpretations[index])
+                else:
+                    result.append(s) #result.append(interpretations[atom_num]) 
         else:
             result.append(s)
+        
+        if(s == True or s == False or not(atom_num == -1)):
+            i = i + 1
     return result
 
-def solve_and_simplify(form_symbol_list, interpretations):
+def solve_and_simplify(form_symbol_list, interpretations, atoms):
     form_symbol_list = set_interpretations_formular_list(
-        form_symbol_list, interpretations)
+        form_symbol_list, interpretations, atoms)
     post_fix = __shunting_yard_algorithm(form_symbol_list)
     post_fix_evaluated = __post_fix_stack_evaluator(post_fix)
     post_fix_evaluated_unleashed = []
